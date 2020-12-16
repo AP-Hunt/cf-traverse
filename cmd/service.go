@@ -11,6 +11,7 @@ import (
 func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 	validTargetTypes := []string{
 		"space",
+		"org",
 	}
 	return &cobra.Command{
 		Use:     "service",
@@ -24,9 +25,39 @@ func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 
 			identifier := args[1]
 
+			endpoint, err := cliConnection.ApiEndpoint()
+			if err != nil {
+				return err
+			}
+
+			token, err := cliConnection.AccessToken()
+			if err != nil {
+				return err
+			}
+
+			cfg := cfclient.Config{
+				ApiAddress: endpoint,
+				Token:      token,
+			}
+
+			client, err := cfclient.NewClient(&cfg)
+			if err != nil {
+				return err
+			}
+
 			switch targetType {
 			case "space":
-				return serviceToSpace(cliConnection, identifier)
+				space, err := serviceToSpace(client, identifier)
+				if err != nil {
+					return err
+				}
+				cmd.Print(string(space))
+			case "org":
+				org, err := serviceToOrg(client, identifier)
+				if err != nil {
+					return err
+				}
+				cmd.Print(string(org))
 			}
 
 			return nil
@@ -34,35 +65,41 @@ func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 	}
 }
 
-func serviceToSpace(cliConnection cliPlugin.CliConnection, identifier string) error {
-	endpoint, err := cliConnection.ApiEndpoint()
+func serviceToSpace(client *cfclient.Client, identifier string) ([]byte, error) {
+
+	svcInstance, err := apiGetRequest(client, fmt.Sprintf("/v3/service_instances/%s", identifier))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	token, err := cliConnection.AccessToken()
+	spaceGUID, err := jsonPath(svcInstance, "$.relationships.space.data.guid")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	cfg := cfclient.Config{
-		ApiAddress: endpoint,
-		Token:      token,
+	spaceJSON, err := apiGetRequest(client, fmt.Sprintf("/v3/spaces/%s", spaceGUID))
+	if err != nil {
+		return nil, err
 	}
 
-	client, err := cfclient.NewClient(&cfg)
+	return spaceJSON, nil
+}
+
+func serviceToOrg(client *cfclient.Client, identifier string) ([]byte, error) {
+	space, err := serviceToSpace(client, identifier)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	svcInstance, err := client.GetServiceInstanceByGuid(identifier)
+	orgGUID, err := jsonPath(space, "$.relationships.organization.data.guid")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	resp, err := client.DoRequest(client.NewRequest("GET", fmt.Sprintf("/v3/spaces/%s", svcInstance.SpaceGuid)))
+	org, err := apiGetRequest(client, fmt.Sprintf("/v3/organizations/%s", orgGUID))
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return printResponseBodytoJSON(resp.Body)
+
+	return org, nil
 }
