@@ -22,11 +22,15 @@ func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 				return fmt.Errorf("unknown relation '%s'", targetType)
 			}
 
-			identifier := args[1]
-
 			client, err := newClient(cliConnection)
 			if err != nil {
 				return err
+			}
+
+			identifier := args[1]
+
+			if !isUUID(identifier) {
+				identifier, err = serviceGuidFromName(client, identifier)
 			}
 
 			switch targetType {
@@ -47,6 +51,20 @@ func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 			return nil
 		},
 	}
+}
+
+func serviceGuidFromName(client *cfclient.Client, identifier string) (string, error) {
+	listing, err := apiGetRequest(client, fmt.Sprintf("/v3/service_instances?names=%s", identifier))
+	if err != nil {
+		return "" ,err
+	}
+
+	guid, err := jsonPath(listing, "$.resources[0].guid")
+	if err != nil {
+		return "", err
+	}
+
+	return guid, nil
 }
 
 func serviceToSpace(client *cfclient.Client, identifier string) ([]byte, error) {

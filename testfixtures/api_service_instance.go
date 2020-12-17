@@ -3,14 +3,17 @@ package testfixtures
 import "fmt"
 
 const V3ServiceInstanceGuid = "e9aca2a7-f4f9-431e-924c-664ddc236604"
+const V3ServiceInstanceName = "a-service-instance"
 
 var V3ServiceInstancePath = fmt.Sprintf("/v3/service_instances/%s", V3ServiceInstanceGuid)
+var V3ServiceInstanceListingPath = fmt.Sprintf("/v3/service_instances?names=%s", V3ServiceInstanceName)
+
 var V3ServiceInstance = fmt.Sprintf(`
 {
 	"guid": "%[1]s",
 	"created_at": "2020-03-10T15:49:29Z",
 	"updated_at": "2020-03-10T15:49:29Z",
-	"name": "my-managed-instance",
+	"name": "%[3]s",
 	"tags": [],
 	"type": "managed",
 	"maintenance_info": {
@@ -65,4 +68,26 @@ var V3ServiceInstance = fmt.Sprintf(`
 `,
 	V3ServiceInstanceGuid,
 	V3SpaceGuid,
+	V3ServiceInstanceName,
 )
+
+var V3ServiceInstanceListing = fmt.Sprintf(`
+{
+  "pagination": {
+    "total_results": 1,
+    "total_pages": 1,
+    "first": {
+      "href": "https://api.example.org/v3/service_instances?page=1&per_page=50"
+    },
+    "last": {
+      "href": "https://api.example.org/v3/service_instances?page=1&per_page=50"
+    },
+    "next": null,
+    "previous": null
+  },
+  "resources": [
+	%[1]s
+  ]
+}
+`,
+V3ServiceInstance)

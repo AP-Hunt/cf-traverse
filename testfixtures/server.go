@@ -19,7 +19,13 @@ func NewAPIServer() *APIServer {
 
 	httpServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
-		if response, ok := apiServer.pathResponses[path]; ok {
+		query := r.URL.Query().Encode()
+
+		fullPath := path
+		if query != "" {
+			fullPath = fullPath+"?"+query
+		}
+		if response, ok := apiServer.pathResponses[fullPath]; ok {
 			w.WriteHeader(http.StatusOK)
 			w.Write(response)
 		} else {
