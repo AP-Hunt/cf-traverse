@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	cliPlugin "code.cloudfoundry.org/cli/plugin"
 	"fmt"
-	"io"
 	"io/ioutil"
+	"strings"
 
 	"github.com/cloudfoundry-community/go-cfclient"
 	"github.com/spyzhov/ajson"
@@ -17,16 +18,6 @@ func inSlice(xs []string, y string) bool {
 	}
 
 	return false
-}
-
-func printResponseBodytoJSON(responseBody io.ReadCloser) error {
-	bs, err := ioutil.ReadAll(responseBody)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(bs))
-	return nil
 }
 
 func apiGetRequest(client *cfclient.Client, path string) ([]byte, error) {
@@ -67,4 +58,27 @@ func jsonPath(json []byte, path string) (string, error) {
 		return "", err
 	}
 	return nodeVal.(string), nil
+}
+
+func newClient(cliConnection cliPlugin.CliConnection) (*cfclient.Client, error) {
+	endpoint, err := cliConnection.ApiEndpoint()
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := cliConnection.AccessToken()
+	if err != nil {
+		return nil, err
+	}
+
+	cfg := cfclient.Config{
+		ApiAddress: endpoint,
+		Token:      strings.Replace(token, "bearer ", "", -1),
+	}
+
+	client, err := cfclient.NewClient(&cfg)
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
 }

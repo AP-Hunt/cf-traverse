@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"fmt"
-
 	cliPlugin "code.cloudfoundry.org/cli/plugin"
+	"fmt"
 	cfclient "github.com/cloudfoundry-community/go-cfclient"
 	"github.com/spf13/cobra"
 )
@@ -25,22 +24,7 @@ func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 
 			identifier := args[1]
 
-			endpoint, err := cliConnection.ApiEndpoint()
-			if err != nil {
-				return err
-			}
-
-			token, err := cliConnection.AccessToken()
-			if err != nil {
-				return err
-			}
-
-			cfg := cfclient.Config{
-				ApiAddress: endpoint,
-				Token:      token,
-			}
-
-			client, err := cfclient.NewClient(&cfg)
+			client, err := newClient(cliConnection)
 			if err != nil {
 				return err
 			}
