@@ -11,7 +11,7 @@ import (
 	"github.com/AP-Hunt/cf-traverse/testfixtures"
 )
 
-var _ = Describe("service", func() {
+var _ = Describe("service_instance", func() {
 	var apiServer *testfixtures.APIServer
 	var cliConnection plugin.CliConnection
 	var out bytes.Buffer
