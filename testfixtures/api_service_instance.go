@@ -31,7 +31,7 @@ var V3ServiceInstance = fmt.Sprintf(`
 	"relationships": {
 	  "service_plan": {
 		"data": {
-		  "guid": "5358d122-638e-11ea-afca-bf6e756684ac"
+		  "guid": "%[4]s"
 		}
 	  },
 	  "space": {
@@ -49,7 +49,7 @@ var V3ServiceInstance = fmt.Sprintf(`
 		"href": "https://api.example.org/v3/service_instances/%[1]s"
 	  },
 	  "service_plan": {
-		"href": "https://api.example.org/v3/service_plans/5358d122-638e-11ea-afca-bf6e756684ac"
+		"href": "https://api.example.org/v3/service_plans/%[4]s"
 	  },
 	  "space": {
 		"href": "https://api.example.org/v3/spaces/%[2]s"
@@ -69,6 +69,7 @@ var V3ServiceInstance = fmt.Sprintf(`
 	V3ServiceInstanceGuid,
 	V3SpaceGuid,
 	V3ServiceInstanceName,
+	V3ServicePlanGuid,
 )
 
 var V3ServiceInstanceListing = fmt.Sprintf(`
