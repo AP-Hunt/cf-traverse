@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/AP-Hunt/cf-traverse/version"
+	"strconv"
 
 	cliPlugin "code.cloudfoundry.org/cli/plugin"
 	"github.com/AP-Hunt/cf-traverse/cmd"
@@ -10,7 +12,7 @@ import (
 type Plugin struct {
 }
 
-func NewPluin() *Plugin {
+func NewPlugin() *Plugin {
 	return &Plugin{}
 }
 
@@ -26,12 +28,28 @@ func (p *Plugin) Run(cliConnection cliPlugin.CliConnection, args []string) {
 }
 
 func (p *Plugin) GetMetadata() cliPlugin.PluginMetadata {
+	majorVersionInt, err := strconv.Atoi(version.MAJOR_VERSION)
+	if err != nil {
+		panic(fmt.Sprintf("cannot convert major version '%s' to an integer", version.MAJOR_VERSION))
+	}
+
+	minorVersionInt, err := strconv.Atoi(version.MINOR_VERSION)
+	if err != nil {
+		panic(fmt.Sprintf("cannot convert minor version '%s' to an integer", version.MINOR_VERSION))
+	}
+
+	patchVersionInt, err := strconv.Atoi(version.PATCH_VERSION)
+	if err != nil {
+		panic(fmt.Sprintf("cannot convert patch version '%s' to an integer", version.PATCH_VERSION))
+	}
+
+
 	return cliPlugin.PluginMetadata{
 		Name: "traverse",
 		Version: cliPlugin.VersionType{
-			Major: 0,
-			Minor: 1,
-			Build: 1,
+			Major: majorVersionInt,
+			Minor: minorVersionInt,
+			Build: patchVersionInt,
 		},
 		MinCliVersion: cliPlugin.VersionType{
 			Major: 7,

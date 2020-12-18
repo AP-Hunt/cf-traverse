@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	cliPlugin.Start(NewPluin())
+	cliPlugin.Start(NewPlugin())
 }
