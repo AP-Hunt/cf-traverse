@@ -8,20 +8,12 @@ import (
 )
 
 func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
-	validTargetTypes := []string{
-		"space",
-		"org",
-	}
+
 	return &cobra.Command{
 		Use:     "service_instance",
 		Aliases: []string{"s_i"},
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			targetType := args[0]
-			if !inSlice(validTargetTypes, targetType) {
-				return fmt.Errorf("unknown relation '%s'", targetType)
-			}
-
 			client, err := newClient(cliConnection)
 			if err != nil {
 				return err
@@ -30,22 +22,31 @@ func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 			identifier := args[1]
 
 			if !isUUID(identifier) {
-				identifier, err = serviceGuidFromName(client, identifier)
+				identifier, err = serviceInstanceGuidFromName(client, identifier)
 			}
 
+			targetType := args[0]
 			switch targetType {
 			case "space":
-				space, err := serviceToSpace(client, identifier)
+				space, err := serviceInstanceToSpace(client, identifier)
 				if err != nil {
 					return err
 				}
 				cmd.Print(string(space))
 			case "org":
-				org, err := serviceToOrg(client, identifier)
+				org, err := serviceInstanceToOrg(client, identifier)
 				if err != nil {
 					return err
 				}
 				cmd.Print(string(org))
+			case "plan":
+				plan, err := serviceInstanceToPlan(client, identifier)
+				if err != nil {
+					return err
+				}
+				cmd.Print(string(plan))
+			default:
+				return fmt.Errorf("unknown relation '%s'", targetType)
 			}
 
 			return nil
@@ -53,7 +54,7 @@ func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 	}
 }
 
-func serviceGuidFromName(client *cfclient.Client, identifier string) (string, error) {
+func serviceInstanceGuidFromName(client *cfclient.Client, identifier string) (string, error) {
 	listing, err := apiGetRequest(client, fmt.Sprintf("/v3/service_instances?names=%s", identifier))
 	if err != nil {
 		return "" ,err
@@ -67,7 +68,7 @@ func serviceGuidFromName(client *cfclient.Client, identifier string) (string, er
 	return guid, nil
 }
 
-func serviceToSpace(client *cfclient.Client, identifier string) ([]byte, error) {
+func serviceInstanceToSpace(client *cfclient.Client, identifier string) ([]byte, error) {
 
 	svcInstance, err := apiGetRequest(client, fmt.Sprintf("/v3/service_instances/%s", identifier))
 	if err != nil {
@@ -87,8 +88,8 @@ func serviceToSpace(client *cfclient.Client, identifier string) ([]byte, error) 
 	return spaceJSON, nil
 }
 
-func serviceToOrg(client *cfclient.Client, identifier string) ([]byte, error) {
-	space, err := serviceToSpace(client, identifier)
+func serviceInstanceToOrg(client *cfclient.Client, identifier string) ([]byte, error) {
+	space, err := serviceInstanceToSpace(client, identifier)
 	if err != nil {
 		return nil, err
 	}
@@ -104,4 +105,23 @@ func serviceToOrg(client *cfclient.Client, identifier string) ([]byte, error) {
 	}
 
 	return org, nil
+}
+
+func serviceInstanceToPlan(client *cfclient.Client, identifier string) ([]byte, error) {
+	svcInstance, err := apiGetRequest(client, fmt.Sprintf("/v3/service_instances/%s", identifier))
+	if err != nil {
+		return nil, err
+	}
+
+	planGUID, err := jsonPath(svcInstance, "$.relationships.service_plan.data.guid")
+	if err != nil {
+		return nil, err
+	}
+
+	planJSON, err := apiGetRequest(client, fmt.Sprintf("/v3/service_plans/%s", planGUID))
+	if err != nil {
+		return nil, err
+	}
+
+	return planJSON, nil
 }

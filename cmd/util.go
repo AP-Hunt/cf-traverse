@@ -11,16 +11,6 @@ import (
 	"github.com/spyzhov/ajson"
 )
 
-func inSlice(xs []string, y string) bool {
-	for _, x := range xs {
-		if x == y {
-			return true
-		}
-	}
-
-	return false
-}
-
 func apiGetRequest(client *cfclient.Client, path string) ([]byte, error) {
 	resp, err := client.DoRequest(client.NewRequest("GET", path))
 	if err != nil {
