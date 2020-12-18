@@ -13,8 +13,8 @@ func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 		"org",
 	}
 	return &cobra.Command{
-		Use:     "service",
-		Aliases: []string{"s"},
+		Use:     "service_instance",
+		Aliases: []string{"s_i"},
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			targetType := args[0]
