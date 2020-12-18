@@ -45,6 +45,12 @@ func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 					return err
 				}
 				cmd.Print(string(plan))
+			case "service_offering":
+				offering, err := serviceInstanceToServiceOffering(client, identifier)
+				if err != nil {
+					return err
+				}
+				cmd.Print(string(offering))
 			default:
 				return fmt.Errorf("unknown relation '%s'", targetType)
 			}
@@ -124,4 +130,24 @@ func serviceInstanceToPlan(client *cfclient.Client, identifier string) ([]byte, 
 	}
 
 	return planJSON, nil
+}
+
+func serviceInstanceToServiceOffering(client *cfclient.Client, identifier string) ([]byte, error) {
+	plan, err := serviceInstanceToPlan(client, identifier)
+
+	if err != nil {
+		return nil, err
+	}
+
+	offeringGUID,err  := jsonPath(plan, "$.relationships.service_offering.data.guid")
+	if err != nil {
+		return nil, err
+	}
+
+	offeringJSON, err := apiGetRequest(client, fmt.Sprintf("/v3/service_offerings/%s", offeringGUID))
+	if err != nil {
+		return nil, err
+	}
+
+	return offeringJSON, nil
 }

@@ -26,6 +26,7 @@ var _ = Describe("service_instance", func() {
 		apiServer.PathReturns(testfixtures.V3OrgPath, []byte(testfixtures.V3Org))
 		apiServer.PathReturns(testfixtures.V3ServiceInstanceListingPath, []byte(testfixtures.V3ServiceInstanceListing))
 		apiServer.PathReturns(testfixtures.V3ServicePlanPath, []byte(testfixtures.V3ServicePlan))
+		apiServer.PathReturns(testfixtures.V3ServiceOfferingPath, []byte(testfixtures.V3ServiceOffering))
 	})
 
 	AfterEach(func() {
@@ -99,6 +100,30 @@ var _ = Describe("service_instance", func() {
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(out.String()).To(Equal(testfixtures.V3ServicePlan))
+		})
+	})
+
+	Describe("service_offering SERVICE_INSTANCE_GUID|SERVICE_INSTANCE_NAME", func(){
+		It("gets the service offering the service instance is an instance of when give a UUID", func() {
+
+			cmd := NewServiceCommand(cliConnection)
+			cmd.SetArgs([]string{"service_offering", testfixtures.V3ServiceInstanceGuid})
+			cmd.SetOut(&out)
+			err := cmd.Execute()
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(out.String()).To(Equal(testfixtures.V3ServiceOffering))
+		})
+
+		It("gets the service offering the service instance is an instance of when give a service instance name", func() {
+
+			cmd := NewServiceCommand(cliConnection)
+			cmd.SetArgs([]string{"service_offering", testfixtures.V3ServiceInstanceName})
+			cmd.SetOut(&out)
+			err := cmd.Execute()
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(out.String()).To(Equal(testfixtures.V3ServiceOffering))
 		})
 	})
 })

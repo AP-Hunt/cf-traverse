@@ -60,7 +60,7 @@ var V3ServicePlan = fmt.Sprintf(`
   "relationships": {
     "service_offering": {
       "data": {
-        "guid": "13c60e38-11e7-11ea-9106-33ee3c5bd4d7"
+        "guid": "%[2]s"
       }
     }
   },
@@ -73,12 +73,13 @@ var V3ServicePlan = fmt.Sprintf(`
       "href": "https://api.example.org/v3/service_plans/%[1]s"
     },
     "service_offering": {
-      "href": "https://api.example.org/v3/service_offerings/13c60e38-11e7-11ea-9106-33ee3c5bd4d7"
+      "href": "https://api.example.org/v3/service_offerings/%[2]s"
     },
     "visibility": {
-      "href": "https://api.example.org/v3/service_plans/bf7eb420-11e5-11ea-b7db-4b5d5e7976a9/visibility"
+      "href": "https://api.example.org/v3/service_plans/%[1]s/visibility"
     }
   }
 }
 `,
-V3ServicePlanGuid)
+V3ServicePlanGuid,
+V3ServiceOfferingGuid)
