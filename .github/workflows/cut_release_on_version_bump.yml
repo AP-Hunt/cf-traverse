@@ -1,0 +1,48 @@
+# This workflow creates a release in GitHub
+# whenever the version is bumped, indicated 
+# by a new tag being created
+on:
+    push:
+        branches:
+            - cut_release_on_version_bump
+        tags: 
+            - "*"
+
+name: Cut release
+jobs:
+    cut_release:
+        name: Cut release
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-go@v2
+              with:
+                go-version: '^1.15'
+
+            - name: Compile release
+              run: make release
+            
+            - name: Create release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                tag_name: ${{ github.ref }}
+                release_name: "Version ${{github.ref}}"
+                draft: false
+                prerelease: false
+
+            - name: Put version in env
+              run: echo "CF_TRAVERSE_VERSION=$(cat version.txt)" >> $GITHUB_ENV 
+
+            - name: Upload assets
+              id: upload_assets
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }}
+                asset_path: "cf-traverse-${{ env.CF_TRAVERSE_VERSION }}.tar.gz"
+                asset_name: "cf-traverse-${{ env.CF_TRAVERSE_VERSION }}.tar.gz"
+                asset_content_type: application/gzip
