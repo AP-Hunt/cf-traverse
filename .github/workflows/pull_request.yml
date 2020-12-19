@@ -1,3 +1,5 @@
+# This workflow runs the suite of tests when a PR is 
+# created or modified.
 on: pull_request
 name: Pull Request
 jobs:
