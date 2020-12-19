@@ -1,5 +1,6 @@
 # This workflow increments the minor version 
-# when there is a push to the main branch.
+# when there is a push to the main branch. It
+# also creates a new release for the tag.
 # 
 # It does not run if the commit has been tagged,
 # so that it doesn't get in to an endless loop
@@ -22,9 +23,11 @@ jobs:
               with:
                 go-version: '^1.15'
 
-            - name: Install semver cli
-              run: go get github.com/davidrjonas/semver-cli
-
+            - name: Install dependencies
+              run: |
+                go mod vendor
+                 go get github.com/davidrjonas/semver-cli
+  
             - name: Increment minor version
               run: |
                 echo "Current version: $(cat version.txt)"
@@ -42,3 +45,28 @@ jobs:
                 author_email: "github@andyhunt.me"
                 message: "Bump version to ${{ env.CF_TRAVERSE_VERSION }}"
                 tag: "${{ env.CF_TRAVERSE_VERSION }} --force"
+
+            - name: Compile release
+              run: make release
+
+            - name: Create release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                tag_name: ${{ env.CF_TRAVERSE_VERSION }}
+                release_name: "Version ${{ env.CF_TRAVERSE_VERSION }}"
+                draft: false
+                prerelease: false
+
+            - name: Upload assets
+              id: upload_assets
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }}
+                asset_path: "cf-traverse-${{ env.CF_TRAVERSE_VERSION }}.tar.gz"
+                asset_name: "cf-traverse-${{ env.CF_TRAVERSE_VERSION }}.tar.gz"
+                asset_content_type: application/gzip              
