@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/AP-Hunt/cf-traverse/version"
 	"strconv"
+
+	"github.com/AP-Hunt/cf-traverse/version"
 
 	cliPlugin "code.cloudfoundry.org/cli/plugin"
 	"github.com/AP-Hunt/cf-traverse/cmd"
@@ -18,7 +19,8 @@ func NewPlugin() *Plugin {
 
 func (p *Plugin) Run(cliConnection cliPlugin.CliConnection, args []string) {
 	root := cmd.NewRootCommand()
-	root.AddCommand(cmd.NewServiceCommand(cliConnection))
+	root.AddCommand(cmd.NewServiceInstancesCommand(cliConnection))
+	root.AddCommand(cmd.NewServicePlansCommand(cliConnection))
 
 	root.SetArgs(args[1:])
 	err := root.Execute()
@@ -42,7 +44,6 @@ func (p *Plugin) GetMetadata() cliPlugin.PluginMetadata {
 	if err != nil {
 		panic(fmt.Sprintf("cannot convert patch version '%s' to an integer", version.PATCH_VERSION))
 	}
-
 
 	return cliPlugin.PluginMetadata{
 		Name: "traverse",
