@@ -24,14 +24,21 @@ for the source entity. The table below shows all the supported source entities, 
         </tr>    
     </thead>
     <tbody>
+        <!-- Service instance -->
         <tr>
-            <td rowspan="0">service_instance</td>
-            <td rowspan="0">A service instance guid, or service instance name</td>
+            <td rowspan="5">service_instance</td>
+            <td rowspan="5">A service instance guid, or service instance name</td>
         </tr>
         <tr><td>space</td></tr>
         <tr><td>org</td></tr>
         <tr><td>plan</td></tr>
         <tr><td>service_offering</td></tr>
+        <!-- Service plan -->
+        <tr>
+            <td rowspan="2">service_plan</td>
+            <td rowspan="2">A service plan guid</td>
+        </tr>
+        <tr><td>instances_of</td></tr>
     </tbody>
 </table>
 

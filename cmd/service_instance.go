@@ -1,13 +1,14 @@
 package cmd
 
 import (
-	cliPlugin "code.cloudfoundry.org/cli/plugin"
 	"fmt"
+
+	cliPlugin "code.cloudfoundry.org/cli/plugin"
 	cfclient "github.com/cloudfoundry-community/go-cfclient"
 	"github.com/spf13/cobra"
 )
 
-func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
+func NewServiceInstancesCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 
 	return &cobra.Command{
 		Use:     "service_instance",
@@ -63,7 +64,7 @@ func NewServiceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 func serviceInstanceGuidFromName(client *cfclient.Client, identifier string) (string, error) {
 	listing, err := apiGetRequest(client, fmt.Sprintf("/v3/service_instances?names=%s", identifier))
 	if err != nil {
-		return "" ,err
+		return "", err
 	}
 
 	guid, err := jsonPath(listing, "$.resources[0].guid")
@@ -139,7 +140,7 @@ func serviceInstanceToServiceOffering(client *cfclient.Client, identifier string
 		return nil, err
 	}
 
-	offeringGUID,err  := jsonPath(plan, "$.relationships.service_offering.data.guid")
+	offeringGUID, err := jsonPath(plan, "$.relationships.service_offering.data.guid")
 	if err != nil {
 		return nil, err
 	}
