@@ -7,7 +7,7 @@
 on:
     push:
         branches:
-            - increment_version_and_create_release_on_main_merge
+            - main
         tags-ignore:
             - "*"         
 
