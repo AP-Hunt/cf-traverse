@@ -24,6 +24,9 @@ func NewServiceInstancesCommand(cliConnection cliPlugin.CliConnection) *cobra.Co
 
 			if !isUUID(identifier) {
 				identifier, err = serviceInstanceGuidFromName(client, identifier)
+				if err != nil {
+					return err
+				}
 			}
 
 			targetType := args[0]
@@ -67,7 +70,7 @@ func serviceInstanceGuidFromName(client *cfclient.Client, identifier string) (st
 		return "", err
 	}
 
-	guid, err := jsonPath(listing, "$.resources[0].guid")
+	guid, err := jsonPathString(listing, "$.resources[0].guid")
 	if err != nil {
 		return "", err
 	}
@@ -82,7 +85,7 @@ func serviceInstanceToSpace(client *cfclient.Client, identifier string) ([]byte,
 		return nil, err
 	}
 
-	spaceGUID, err := jsonPath(svcInstance, "$.relationships.space.data.guid")
+	spaceGUID, err := jsonPathString(svcInstance, "$.relationships.space.data.guid")
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +104,7 @@ func serviceInstanceToOrg(client *cfclient.Client, identifier string) ([]byte, e
 		return nil, err
 	}
 
-	orgGUID, err := jsonPath(space, "$.relationships.organization.data.guid")
+	orgGUID, err := jsonPathString(space, "$.relationships.organization.data.guid")
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +123,7 @@ func serviceInstanceToPlan(client *cfclient.Client, identifier string) ([]byte, 
 		return nil, err
 	}
 
-	planGUID, err := jsonPath(svcInstance, "$.relationships.service_plan.data.guid")
+	planGUID, err := jsonPathString(svcInstance, "$.relationships.service_plan.data.guid")
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +143,7 @@ func serviceInstanceToServiceOffering(client *cfclient.Client, identifier string
 		return nil, err
 	}
 
-	offeringGUID, err := jsonPath(plan, "$.relationships.service_offering.data.guid")
+	offeringGUID, err := jsonPathString(plan, "$.relationships.service_offering.data.guid")
 	if err != nil {
 		return nil, err
 	}

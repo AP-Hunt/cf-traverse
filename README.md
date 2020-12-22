@@ -39,6 +39,12 @@ for the source entity. The table below shows all the supported source entities, 
             <td rowspan="2">A service plan guid</td>
         </tr>
         <tr><td>instances_of</td></tr>
+        <!-- Service offering -->
+        <tr>
+            <td rowspan="2">service_offering</td>
+            <td rowspan="2">A service offering guid, or service offering name</td>
+        </tr>
+        <tr><td>instances_of</td></tr>
     </tbody>
 </table>
 

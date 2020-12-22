@@ -21,6 +21,7 @@ func (p *Plugin) Run(cliConnection cliPlugin.CliConnection, args []string) {
 	root := cmd.NewRootCommand()
 	root.AddCommand(cmd.NewServiceInstancesCommand(cliConnection))
 	root.AddCommand(cmd.NewServicePlansCommand(cliConnection))
+	root.AddCommand(cmd.NewServiceOfferingsCommand(cliConnection))
 
 	root.SetArgs(args[1:])
 	err := root.Execute()

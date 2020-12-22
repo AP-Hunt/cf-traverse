@@ -25,7 +25,7 @@ func apiGetRequest(client *cfclient.Client, path string) ([]byte, error) {
 	return respBytes, nil
 }
 
-func jsonPath(json []byte, path string) (string, error) {
+func jsonPathString(json []byte, path string) (string, error) {
 	root, err := ajson.Unmarshal(json)
 	if err != nil {
 		return "", err
@@ -49,6 +49,34 @@ func jsonPath(json []byte, path string) (string, error) {
 		return "", err
 	}
 	return nodeVal.(string), nil
+}
+
+func jsonPathStringSlice(json []byte, path string) ([]string, error) {
+	root, err := ajson.Unmarshal(json)
+	if err != nil {
+		return nil, err
+	}
+
+	nodes, err := root.JSONPath(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(nodes) == 0 {
+		return []string{}, nil
+	}
+
+	var result []string
+	for _, node := range nodes {
+		nodeVal, err := node.Value()
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, nodeVal.(string))
+	}
+
+	return result, nil
 }
 
 func newClient(cliConnection cliPlugin.CliConnection) (*cfclient.Client, error) {

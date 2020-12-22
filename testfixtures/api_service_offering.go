@@ -3,12 +3,15 @@ package testfixtures
 import "fmt"
 
 const V3ServiceOfferingGuid = "38c435ac-87a5-4c19-9794-1ab3e99bd97c"
+const V3ServiceOfferingName = "a-service-offering"
 
 var V3ServiceOfferingPath = fmt.Sprintf("/v3/service_offerings/%s", V3ServiceOfferingGuid)
+var V3ServiceOfferingByNamePath = fmt.Sprintf("/v3/service_offerings?names=%s", V3ServiceOfferingName)
+
 var V3ServiceOffering = fmt.Sprintf(`
 {
   "guid": "%[1]s",
-  "name": "my_service_offering",
+  "name": "%[2]s",
   "description": "Provides my service",
   "available": true,
   "tags": ["relational", "caching"],
@@ -54,4 +57,27 @@ var V3ServiceOffering = fmt.Sprintf(`
   }
 }
 `,
-V3ServiceOfferingGuid)
+V3ServiceOfferingGuid,
+V3ServiceOfferingName)
+
+var V3ServiceOfferingByNameListing = fmt.Sprintf(`
+{
+  "pagination": {
+    "total_results": 1,
+    "total_pages": 1,
+    "first": {
+      "href": "https://api.example.org/v3/service_offerings?page=1&per_page=1&names=%[2]s"
+    },
+    "last": {
+      "href": "https://api.example.org/v3/service_offerings?page=1&per_page=1&names=%[2]s"
+    },
+    "next": null,
+    "previous": null
+  },
+  "resources": [
+	%[1]s
+  ]
+}
+`,
+V3ServiceOffering,
+V3ServiceOfferingName)

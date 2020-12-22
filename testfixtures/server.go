@@ -3,6 +3,7 @@ package testfixtures
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 )
 
 type APIServer struct {
@@ -23,7 +24,11 @@ func NewAPIServer() *APIServer {
 
 		fullPath := path
 		if query != "" {
-			fullPath = fullPath+"?"+query
+			unescapedQuery, err := url.QueryUnescape(query)
+			if err != nil {
+				panic(err)
+			}
+			fullPath = fullPath+"?"+unescapedQuery
 		}
 		if response, ok := apiServer.pathResponses[fullPath]; ok {
 			w.WriteHeader(http.StatusOK)
