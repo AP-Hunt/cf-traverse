@@ -3,9 +3,38 @@ package testfixtures
 import "fmt"
 
 const V3ServicePlanGuid = "2b5fa5bf-eafa-4ae3-9727-e1f6bcc622ee"
+const V3ServicePlanAlternateGuid = "8a138e97-42d6-46f6-be0f-5347d23b7e8e"
 
 var V3ServicePlanPath = fmt.Sprintf("/v3/service_plans/%s", V3ServicePlanGuid)
-var V3ServicePlan = fmt.Sprintf(`
+var V3ServicePlansForOfferingPath = fmt.Sprintf("/v3/service_plans?per_page=5000&service_offering_guids=%s", V3ServiceOfferingGuid)
+
+var V3ServicePlan = NewV3ServicePlan(V3ServicePlanGuid, V3ServiceOfferingGuid)
+var V3ServicePlansForOfferingListing = fmt.Sprintf(`
+{
+  "pagination": {
+    "total_results": 2,
+    "total_pages": 1,
+    "first": {
+      "href": "https://api.example.org/v3/service_plans?page=1&per_page=5000&service_offering_guids=%[1]s"
+    },
+    "last": {
+      "href": "https://api.example.org/v3/service_plans?page=2&per_page=5000&service_offering_guids=%[1]s"
+    },
+    "next": null,
+    "previous": null
+  },
+  "resources": [
+	%[2]s,
+	%[3]s
+  ]
+}`,
+V3ServiceOfferingGuid,
+V3ServicePlan,
+NewV3ServicePlan(V3ServicePlanAlternateGuid, V3ServiceOfferingGuid),
+)
+
+func NewV3ServicePlan(planGuid string, offeringGuid string) string  {
+	return fmt.Sprintf(`
 {
   "guid": "%[1]s",
   "name": "my_big_service_plan",
@@ -81,5 +110,6 @@ var V3ServicePlan = fmt.Sprintf(`
   }
 }
 `,
-V3ServicePlanGuid,
-V3ServiceOfferingGuid)
+		planGuid,
+		offeringGuid)
+}
