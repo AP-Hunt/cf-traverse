@@ -49,5 +49,8 @@ for the source entity. The table below shows all the supported source entities, 
 </table>
 
 ## Installation
-The current best path is to run `make install`. Releases in GitHub will come in the future.
+You can either 
+
+* [install from a release](https://github.com/AP-Hunt/cf-traverse/releases) by running `cf install-plugin -f RELEASE_ASSET_URL`  
+* install from source by running `make install`. You will need [`semver-cli`](https://github.com/davidrjonas/semver-cli) installed
 
