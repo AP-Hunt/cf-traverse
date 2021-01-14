@@ -26,7 +26,7 @@ jobs:
             - name: Install dependencies
               run: |
                 go mod vendor
-                 go get github.com/davidrjonas/semver-cli
+                go get github.com/davidrjonas/semver-cli
   
             - name: Increment minor version
               run: |
@@ -62,11 +62,7 @@ jobs:
 
             - name: Upload assets
               id: upload_assets
-              uses: actions/upload-release-asset@v1
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                upload_url: ${{ steps.create_release.outputs.upload_url }}
-                asset_path: "cf-traverse-${{ env.CF_TRAVERSE_VERSION }}.tar.gz"
-                asset_name: "cf-traverse-${{ env.CF_TRAVERSE_VERSION }}.tar.gz"
-                asset_content_type: application/gzip              
+              run: |
+                gh release upload "${CF_TRAVERSE_VERSION}" ./bin/release/*
