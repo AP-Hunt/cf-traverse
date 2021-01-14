@@ -27,7 +27,8 @@ jobs:
               run: |
                 go mod vendor
                 go get github.com/davidrjonas/semver-cli
-  
+                go get github.com/mitchellh/gox
+
             - name: Increment minor version
               run: |
                 echo "Current version: $(cat version.txt)"
