@@ -10,7 +10,9 @@ on:
         branches:
             - main
         tags-ignore:
-            - "*"         
+            - "*"
+        paths:
+            - "**.go"
 
 name: Increment minor version
 jobs:
