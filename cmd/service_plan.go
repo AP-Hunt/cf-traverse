@@ -13,6 +13,7 @@ func NewServicePlansCommand(cliConnection cliPlugin.CliConnection) *cobra.Comman
 		Use:     "service_plan",
 		Aliases: []string{"s_p"},
 		Args:    cobra.ExactArgs(2),
+		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := newClient(cliConnection)
 			if err != nil {

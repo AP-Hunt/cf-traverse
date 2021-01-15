@@ -14,6 +14,7 @@ func NewServiceInstancesCommand(cliConnection cliPlugin.CliConnection) *cobra.Co
 		Use:     "service_instance",
 		Aliases: []string{"s_i"},
 		Args:    cobra.ExactArgs(2),
+		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := newClient(cliConnection)
 			if err != nil {

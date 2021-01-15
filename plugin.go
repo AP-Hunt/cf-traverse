@@ -24,10 +24,7 @@ func (p *Plugin) Run(cliConnection cliPlugin.CliConnection, args []string) {
 	root.AddCommand(cmd.NewServiceOfferingsCommand(cliConnection))
 
 	root.SetArgs(args[1:])
-	err := root.Execute()
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	_ = root.Execute()
 }
 
 func (p *Plugin) GetMetadata() cliPlugin.PluginMetadata {
