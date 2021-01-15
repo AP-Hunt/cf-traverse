@@ -13,6 +13,7 @@ func NewServiceOfferingsCommand(cliConnection cliPlugin.CliConnection) *cobra.Co
 		Use: "service_offering",
 		Aliases: []string{"s_o"},
 		Args: cobra.ExactArgs(2),
+		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := newClient(cliConnection)
 			if err != nil {
