@@ -14,6 +14,7 @@ func NewServiceInstancesCommand(cliConnection cliPlugin.CliConnection) *cobra.Co
 	rootCmd := &cobra.Command{
 		Use:     "service_instance",
 		Aliases: []string{"s_i"},
+		Short: "Find relations of a service instance",
 		SilenceUsage: true,
 		TraverseChildren: true,
 	}
@@ -31,6 +32,7 @@ func newServiceInstanceToSpaceCommand(cliConnection cliPlugin.CliConnection) *co
 	return &cobra.Command{
 		Use: "space",
 		Args: cobra.ExactArgs(1),
+		Short: "Find the space to which a service instance belongs",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := newClient(cliConnection)
@@ -61,6 +63,7 @@ func newServiceInstanceToOrgCommand(cliConnection cliPlugin.CliConnection) *cobr
 	return &cobra.Command{
 		Use: "org",
 		Args: cobra.ExactArgs(1),
+		Short: "Find the organization to which the service instance belongs",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := newClient(cliConnection)
@@ -92,6 +95,7 @@ func newServiceInstanceToPlanCommand(cliConnection cliPlugin.CliConnection) *cob
 		Use: "plan",
 		Args: cobra.ExactArgs(1),
 		SilenceUsage: true,
+		Short: "Find the service plan that the service instance is an instance of",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := newClient(cliConnection)
 			if err != nil {
@@ -122,6 +126,7 @@ func newServiceInstanceToServiceOfferingCommand(cliConnection cliPlugin.CliConne
 		Use: "service_offering",
 		Args: cobra.ExactArgs(1),
 		SilenceUsage: true,
+		Short: "Find which service offering the service instance is an instance of",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := newClient(cliConnection)
 			if err != nil {
@@ -152,6 +157,7 @@ func newServiceInstanceOrgSpaceNameCommand(cliConnection cliPlugin.CliConnection
 	cmd := &cobra.Command{
 		Use: "org_space_name -d|--delimiter",
 		Args: cobra.ExactArgs(1),
+		Short: "Format the service instance name, organization name, and space name for the service instance. E.g. `org/space/instance_name`",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := newClient(cliConnection)
