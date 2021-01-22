@@ -2,6 +2,7 @@ package cmd_test
 
 import (
 	"bytes"
+	"fmt"
 
 	"code.cloudfoundry.org/cli/plugin"
 	. "github.com/AP-Hunt/cf-traverse/cmd"
@@ -118,6 +119,37 @@ var _ = Describe("service_instance", func() {
 
 			Expect(err).ToNot(HaveOccurred())
 			Expect(out.String()).To(Equal(testfixtures.V3ServiceOffering))
+		})
+	})
+
+	Describe("org_space_name --delimiter '/' SERVICE_INSTANCE_GUID|SERVICE_INSTANCE_NAME", func(){
+		It("returns an error when not given a delimiter", func() {
+			cmd := NewServiceInstancesCommand(cliConnection)
+			cmd.SetArgs([]string{"org_space_name", testfixtures.V3ServiceInstanceGuid})
+			cmd.SetOut(&out)
+			err := cmd.Execute()
+
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("returns the org name, space name, and service name of the service instance, separated by the delimiter, when given a UUID", func() {
+			cmd := NewServiceInstancesCommand(cliConnection)
+			cmd.SetArgs([]string{"org_space_name", "-d", "/", testfixtures.V3ServiceInstanceGuid})
+			cmd.SetOut(&out)
+			err := cmd.Execute()
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(out.String()).To(Equal(fmt.Sprintf("%s/%s/%s", testfixtures.V3OrgName, testfixtures.V3SpaceName, testfixtures.V3ServiceInstanceName)))
+		})
+
+		It("returns the org name, space name, and service name of the service instance, separated by the delimiter, when given a UUID", func() {
+			cmd := NewServiceInstancesCommand(cliConnection)
+			cmd.SetArgs([]string{"org_space_name", "-d", "/", testfixtures.V3ServiceInstanceName})
+			cmd.SetOut(&out)
+			err := cmd.Execute()
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(out.String()).To(Equal(fmt.Sprintf("%s/%s/%s", testfixtures.V3OrgName, testfixtures.V3SpaceName, testfixtures.V3ServiceInstanceName)))
 		})
 	})
 })
