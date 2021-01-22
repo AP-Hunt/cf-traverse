@@ -8,6 +8,7 @@ func ConfigureAPIServer(apiServer *APIServer) {
 
 	// Service instances
 	apiServer.PathReturns(V3ServiceInstancePath, []byte(V3ServiceInstance))
+	apiServer.PathReturns(V3ServiceInstanceWithOrgAndSpaceNamePath, []byte(V3ServiceInstanceWithOrgAndSpaceName))
 	apiServer.PathReturns(V3ServiceInstanceByNameListingPath, []byte(V3ServiceInstancesByNameListing))
 	apiServer.PathReturns(V3ServiceInstancesBySinglePlanListingPath, []byte(V3ServiceInstancesBySinglePlanListing))
 	apiServer.PathReturns(V3ServiceInstancesByMultiplePlanListingPath, []byte(V3ServiceInstancesByMultiplePlanListing))

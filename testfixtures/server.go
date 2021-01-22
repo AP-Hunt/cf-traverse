@@ -1,6 +1,7 @@
 package testfixtures
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -51,7 +52,28 @@ func (api *APIServer) ListenerAddr() string {
 }
 
 func (api *APIServer) PathReturns(path string, bytes []byte) {
-	api.pathResponses[path] = bytes
+	// Convert to a URI type and format correctly, to ensure
+	// that the query strings are consistently ordered when
+	// a request is parsed in the server
+	u, err  := url.ParseRequestURI(path)
+
+	if err != nil {
+		panic(fmt.Sprintf("String '%s' is not a valid request URI", path))
+	}
+
+	p := u.Path
+	query := u.Query().Encode()
+
+	fullPath := p
+	if query != "" {
+		unescapedQuery, err := url.QueryUnescape(query)
+		if err != nil {
+			panic(err)
+		}
+		fullPath = fullPath+"?"+unescapedQuery
+	}
+
+	api.pathResponses[fullPath] = bytes
 }
 
 func (api *APIServer) Stop() {
