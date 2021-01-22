@@ -10,10 +10,25 @@ import (
 
 func NewServiceInstancesCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
 
-	return &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:     "service_instance",
 		Aliases: []string{"s_i"},
-		Args:    cobra.ExactArgs(2),
+		SilenceUsage: true,
+		TraverseChildren: true,
+	}
+
+	rootCmd.AddCommand(newServiceInstanceToSpaceCommand(cliConnection))
+	rootCmd.AddCommand(newServiceInstanceToOrgCommand(cliConnection))
+	rootCmd.AddCommand(newServiceInstanceToPlanCommand(cliConnection))
+	rootCmd.AddCommand(newServiceInstanceToServiceOfferingCommand(cliConnection))
+
+	return rootCmd
+}
+
+func newServiceInstanceToSpaceCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
+	return &cobra.Command{
+		Use: "space",
+		Args: cobra.ExactArgs(1),
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := newClient(cliConnection)
@@ -21,7 +36,7 @@ func NewServiceInstancesCommand(cliConnection cliPlugin.CliConnection) *cobra.Co
 				return err
 			}
 
-			identifier := args[1]
+			identifier := args[0]
 
 			if !isUUID(identifier) {
 				identifier, err = serviceInstanceGuidFromName(client, identifier)
@@ -30,36 +45,101 @@ func NewServiceInstancesCommand(cliConnection cliPlugin.CliConnection) *cobra.Co
 				}
 			}
 
-			targetType := args[0]
-			switch targetType {
-			case "space":
-				space, err := serviceInstanceToSpace(client, identifier)
-				if err != nil {
-					return err
-				}
-				cmd.Print(string(space))
-			case "org":
-				org, err := serviceInstanceToOrg(client, identifier)
-				if err != nil {
-					return err
-				}
-				cmd.Print(string(org))
-			case "plan":
-				plan, err := serviceInstanceToPlan(client, identifier)
-				if err != nil {
-					return err
-				}
-				cmd.Print(string(plan))
-			case "service_offering":
-				offering, err := serviceInstanceToServiceOffering(client, identifier)
-				if err != nil {
-					return err
-				}
-				cmd.Print(string(offering))
-			default:
-				return fmt.Errorf("unknown relation '%s'", targetType)
+			space, err := serviceInstanceToSpace(client, identifier)
+			if err != nil {
+				return err
+			}
+			cmd.Print(string(space))
+			return nil
+		},
+	}
+}
+
+func newServiceInstanceToOrgCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
+	return &cobra.Command{
+		Use: "org",
+		Args: cobra.ExactArgs(1),
+		SilenceUsage: true,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := newClient(cliConnection)
+			if err != nil {
+				return err
 			}
 
+			identifier := args[0]
+
+			if !isUUID(identifier) {
+				identifier, err = serviceInstanceGuidFromName(client, identifier)
+				if err != nil {
+					return err
+				}
+			}
+
+			org, err := serviceInstanceToOrg(client, identifier)
+			if err != nil {
+				return err
+			}
+			cmd.Print(string(org))
+			return nil
+		},
+	}
+}
+
+func newServiceInstanceToPlanCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
+	return &cobra.Command{
+		Use: "plan",
+		Args: cobra.ExactArgs(1),
+		SilenceUsage: true,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := newClient(cliConnection)
+			if err != nil {
+				return err
+			}
+
+			identifier := args[0]
+
+			if !isUUID(identifier) {
+				identifier, err = serviceInstanceGuidFromName(client, identifier)
+				if err != nil {
+					return err
+				}
+			}
+
+			plan, err := serviceInstanceToPlan(client, identifier)
+			if err != nil {
+				return err
+			}
+			cmd.Print(string(plan))
+			return nil
+		},
+	}
+}
+
+func newServiceInstanceToServiceOfferingCommand(cliConnection cliPlugin.CliConnection) *cobra.Command {
+	return &cobra.Command{
+		Use: "service_offering",
+		Args: cobra.ExactArgs(1),
+		SilenceUsage: true,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := newClient(cliConnection)
+			if err != nil {
+				return err
+			}
+
+			identifier := args[0]
+
+			if !isUUID(identifier) {
+				identifier, err = serviceInstanceGuidFromName(client, identifier)
+				if err != nil {
+					return err
+				}
+			}
+
+			offering, err := serviceInstanceToServiceOffering(client, identifier)
+			if err != nil {
+				return err
+			}
+			cmd.Print(string(offering))
 			return nil
 		},
 	}
